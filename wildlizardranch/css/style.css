@@ -1,0 +1,44 @@
+@font-face {
+    font-family: Cisco_Bold;
+    src: url('../resources/CiscoSansTTBold.ttf');
+}
+
+#screen {
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: #420;
+    font-family: Cisco_Bold;
+    overflow: hidden;
+}
+
+#background {
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    opacity: .66;
+}
+
+#title {
+    color: #fff;
+    font-size: 6rem;
+    text-shadow: #000 3px 2px;
+    position: absolute;
+    top: 3%;
+    width: 100%;
+    text-align: center;
+}
+
+#intro {
+    color: #a22;
+    font-size: 5rem;
+    text-shadow: #fff 3px 2px;
+    position: absolute;
+    top: 70%;
+    width: 100%;
+    text-align: center;
+}
