@@ -40,42 +40,63 @@
     margin-right: auto;
 }
 
+#plaque {
+    position: absolute;
+    top: 600px;
+    left: 250px;
+    width: 480px;
+    height: 32px;
+    background-color: black;
+    opacity: 0.7;
+}
+
+#desc {
+    width: 480px;
+    font-family: sans-serif;
+    font-size: 16px;
+    color: #fff;
+    text-align: center;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
 #credits {
     position: absolute;
     top: 97%;
     left: 1%;
     font-family: sans-serif;
-    font-size: 8px;
+    font-size: 10px;
     color: #CCC;
 }
 
-#imgA {
+.viewRegion {
     position: absolute;
-    top: 12%;
-    left: 17%;
-    width: 66%;
-    height: 60%;
+    top: 90px;
+    left: 130px;
+    width: 720px;
+    height: 480px;
     background-color: #333;
     overflow: hidden;
+    box-shadow: #100 10px 10px 50px;
+}
+
+#imgA {
     z-index: 3;
-    box-shadow: #100 10px 10px 30px;
 }
 
 #imgB {
-    position: absolute;
-    top: 12%;
-    left: 17%;
-    width: 66%;
-    height: 60%;
-    background-color: #833;
-    overflow: hidden;
     z-index: 2;
-    box-shadow: #100 10px 10px 30px;
+}
+
+#gloss {
+    background-color: transparent;
+    z-index: 4;
+    box-shadow: none;
 }
 
 #filmstripBackground {
     position: absolute;
-    top: 77%;
+    top: 655px;
     left: 0%;
     width: 100%;
     height: 136px;
@@ -87,7 +108,7 @@
 
 #filmstripContainer {
     position: absolute;
-    top: 78%;
+    top: 663px;
     left: 0%;
     width: 100%;
     height: 120px;
@@ -126,8 +147,8 @@
 
 #filmstripArrowLeft {
     position: absolute;
-    top: 38%;
-    left: 5%;
+    top: 305px;
+    left: 50px;
     width: 57px;
     height: 64px;
     background-image: url(../resources/leftarrow.png);
@@ -136,8 +157,8 @@
 
 #filmstripArrowRight {
     position: absolute;
-    top: 38%;
-    left: 89%;
+    top: 305px;
+    left: 882px;
     width: 57px;
     height: 64px;
     background-image: url(../resources/rightarrow.png);

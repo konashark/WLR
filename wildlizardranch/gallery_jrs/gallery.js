@@ -2,13 +2,15 @@
 // ***************************************************
 var imgA = document.getElementById('imgA');
 var imgB = document.getElementById('imgB');
+var desc = document.getElementById('desc');
 var topImage = 0;
 var filmstripCells = [];
 
 document.getElementById('banner').src = GALLERY.BANNER;
-var imageIndex = parseInt(Math.random() * GALLERY.IMG_LIST.length);
+var imageIndex = parseInt(Math.random() * (GALLERY.IMG_LIST.length - 1));
 imgA.src = GALLERY.IMG_LIST[imageIndex].uri;
 imgB.src = GALLERY.IMG_LIST[imageIndex+1].uri;
+desc.textContent = GALLERY.IMG_LIST[imageIndex].title;
 
 var ENTER = 'imageEnterAnim';
 var EXIT = 'imageExitAnim';
@@ -49,14 +51,7 @@ var moveRight = function() {
 };
 
 // ***************************************************
-// Set up some listeners for user input
-document.getElementById('imgA').onclick = clickedImage;
-document.getElementById('imgB').onclick = clickedImage;
-
-document.getElementById('filmstripArrowLeft').onclick = moveLeft;
-document.getElementById('filmstripArrowRight').onclick = moveRight;
-
-document.getElementById('filmstripMask').onclick = function(ev) {
+var filmstripClick = function(ev) {
     var clickX = (ev.offsetX == undefined) ? ev.layerX : ev.offsetX;
 
     var cell = parseInt((clickX + 60) / 160) - 3;
@@ -66,6 +61,13 @@ document.getElementById('filmstripMask').onclick = function(ev) {
     setFilmstripPosition();
     displayImageDissolve();
 };
+
+// ***************************************************
+// Set up some listeners for user input
+document.getElementById('gloss').onclick = clickedImage;
+document.getElementById('filmstripArrowLeft').onclick = moveLeft;
+document.getElementById('filmstripArrowRight').onclick = moveRight;
+document.getElementById('filmstripMask').onclick = filmstripClick;
 
 // ***************************************************
 var displayImageZoom = function() {
@@ -94,6 +96,7 @@ var displayImageZoom = function() {
             imgA.style.zIndex = '3';
         })
     }
+    desc.textContent = GALLERY.IMG_LIST[imageIndex].title;
 };
 
 // ***************************************************
@@ -115,6 +118,7 @@ var displayImageDissolve = function() {
             imgA.style.zIndex = '3';
         })
     }
+    desc.textContent = GALLERY.IMG_LIST[imageIndex].title;
 };
 
 // ***************************************************
