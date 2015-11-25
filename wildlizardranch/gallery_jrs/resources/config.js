@@ -42,4 +42,4 @@ var GALLERY = {
         { uri: './images/39.jpg', title: 'Red Barn in San Martin, California' },
         { uri: './images/40.jpg', title: 'Sentinel Valley, Yosemite National Park' }
     ]
-}
+};

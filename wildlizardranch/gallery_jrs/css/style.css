@@ -69,6 +69,15 @@
     color: #CCC;
 }
 
+#email {
+    position: absolute;
+    top: 2%;
+    right: 3%;
+    font-family: sans-serif;
+    font-size: 10px;
+    color: #CCC;
+}
+
 .viewRegion {
     position: absolute;
     top: 90px;
