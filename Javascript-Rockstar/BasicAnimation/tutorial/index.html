@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
+        <script src="libs/jquery-2.1.3.min.js"></script>
+        <script src="libs/autosize.js"></script>
+        <script src="js/main.js"></script>
+
+        <div id="banner">
+            Javascript Rockstar Tutorial #1: BASIC ANIMATION
+            <br>
+            <button id="homeLink" class="btn">HOME PAGE</button>
+            <button id="gameLink" class="btn">PLAY DEMO</button>
+            <button id="donateLink" class="btn">BE AWESOME - DONATE</button>
+            <button id="facebookLink" class="btn">FACEBOOK PAGE</button>
+        </div>
+        <div id="content">
+            <pre id="code">
+
+
+
+
+<span>
+// Basic Animation Demo Using Canvas
+// Copyright (c) 2016 by Jeffrey Sprague
+// This source code is intended for educational purposes.
+// Author grants permission to use this code as a foundation for creating other derivative works.
+<textarea class="description">Hi! -- Welcome to the tutorial!
+
+For TUTORIAL #1, we're going to walk through a code listing for a really simple arcade game written in Javascript. Along the way, I will teach you numerous essential tricks and game development design patterns.
+
+If you're here, then you're probably interested in Javascript (a great, and easy choice!) and you're probably interested in games, which can be one of the most rewarding types of programming.
+
+Just move your mouse over any block of text in this code listing and a description of what it does will pop up.
+
+This demo demonstrates the basics of game design... how to set up an animation loop, how to draw and move images in response to user input, and many other techniques. It is my hope that this will inspire you to get started in game programming.
+
+This project is kind of a 'Rosetta Stone' of game programming. Once you understand this code, you will be ready to build upon it and move up to more advanced techniques. I hope you will check out the second tutorial which is a far more robust shoot-em-up game called Alien Invasion! While I think there is much here to anyone new to game development, the best audience for this course is someone with a little bit of programming experience under their belt, who knows what a variable and a function are, but would like to venture into the unique (and fun) type of programming that is GAME development!
+
+If you like what you learn here, please consider donating a few bucks for the game and tutorial via PayPal to encourage future tutorials like this one! (Use link at top of page)
+
+This highlighted code is just a comment block telling a little bit about this code file.
+
+Happy gaming!
+    --Jeff</textarea></span>
+<span>
+window.addEventListener("load", initApp, false);
+<textarea class="description">This tells the browser 'when everything defined on this page is loaded, call my "initApp" function'. This can be any function name you like as long as it exists.
+
+By 'loaded' I mean not just the Javascript file itself, but any external assets, such as images defined in the page (up to this point) have also been loaded. It's not REQUIRED to wait until the page assets load before you start executing code, but it will make your life much easier... you really want to know your image is loaded before you start executing code that manipulates it!
+
+This might be a good time to point out that in Javascript, any code that is not inside of a FUNCTION, is automatically executed the instant the browser loads the Javascript page, so a line like this one is executed immediately, and code in the functions runs only when the function gets called.
+</textarea></span>
+<span>
+var KEY = {LEFT: 37, RIGHT: 39, SPACE: 32, ENTER: 13 };
+var keyState = [];
+<textarea class="description">This simply creates an object named KEY with members that are named after the keys that this app will use, paired with their corresponding ASCII values. This is only done so that the code is more readable later on where we process these keys.
+</textarea></span>
+<span>
+var PLAYFIELD_WIDTH = 480;
+var PLAYFIELD_HEIGHT = 640;
+<textarea class="description">Defining the dimensions of our 'playfield' does two things: it makes it easier to reconfigure the screen if we later choose to do so, and it makes the code easier to read by using names instead of numbers.
+A screen's boundaries are usually referenced many times in a game, so it's nice to have them defined.</textarea></span>
+<span>
+var ctx;    // Main canvas context
+var shipImg, laserImg, alienImg;
+var firing = false;
+var shipX = 100, shipY = 580;
+var missileX, missileY;
+var alienX, alienY = -25;
+var score = 0;
+<textarea class="description">Just some global variables that we will use in the game to keep track of where things are, what state we are in, and some 'holders' for images/sprites.</textarea></span>
+<span>
+/*************************************************/
+function initApp () {
+    console.log("Initializing...");
+<textarea class="description">This is our main function. If you look back at the top of this file you will recall that this is the function that is defined to be called as soon as the browser finishes loading the page. This function is used to initialize everything we need to do before kicking off our animation.</textarea></span>
+<span>
+    var canvas = document.getElementById("canvas");
+    ctx = canvas.getContext("2d");
+    ctx.font = "20px sans_serif";
+<textarea class="description">Okay, here's where we really start getting into the guts of things. Browser action games are usually written using HTML's 'Canvas' feature. Canvas is really just an old-school bitmap, meaning it is a two dimensional table of pixels and the application has complete control of what goes into every pixel.
+
+Canvas provides a robust set of APIs for drawing shapes, text, and most importantly for games, the ability to 'stamp' an image onto the bitmap. That's really the core of how games are written... you load an image, like a spaceship, and every 'frame' you respond to user input (or timers) by moving the location of these images. So you start an animation loop that runs (approximately) 30-60 times a second. Each loop is an animation frame and you clear the canvas and redraw everything inside it, such as by stamping the spaceship image at its updated location. It's variations of this simple recipe that make up all sprite-based games.
+
+What's going on here is that in our index.html file, we have declared a DOM element that we assigned the id 'canvas' to. Here we are looking up that element and asking the system to give us a reference to the bitmap so that we can start drawing into it. We also set the default font and size that is used whenever we draw text to it.
+</textarea></span>
+<span>
+    document.addEventListener("keydown", function (ev) {
+        keyState[ev.keyCode] = true;
+    });
+
+    document.addEventListener("keyup", function (ev) {
+        keyState[ev.keyCode] = false;
+    });
+<textarea class="description">**HOT TIP**
+
+This is how I prefer to track user input for the keyboard. Whenever the user presses any key, this listener is called. All it does is store 'true' in an array at the index that is equivilent to the ASCII code for the character that was pressed. For example, if the SPACE BAR is pressed, which has ASCII code 32, then array element keyState[32] will contain the value true.
+
+If we receive a 'keyup' event, then we know that the user has stopped pressing that key and the corresponding array element (keyState[32]) is set to false.
+
+Once we set up these two listeners, we never have to bother with keypresses again. Now, anytime the application wants to check to see if a key is being held down, the code simply has to peek inside this array:
+
+    if (keyState[32] === true) {
+        fireLaser();
+    }
+</textarea></span>
+<span>
+    shipX = 100 + Math.floor(Math.random() * 250);
+    alienX = 100 + Math.floor(Math.random() * 250);
+
+    loadImages(gameLoop);
+<textarea class="description">These variables track where we draw the ship and the alien. Here, we simply set them to a random number between 100 and 350 to start things off.
+
+For the last part of our initialization we call another function that's dedicated to loading the images we will use in this game: loadImages(gameLoop).
+'gameLoop' is a reference to another function later on in this code listing. As you probably know, this is referred to as a callback. When the loadImages() function completes, we want it to call, or pass control, to the callback function that we passed in.
+
+So in this case, as soon as all the images are loaded, the function gameLoop() is invoked, which starts our game! (After all, we wouldn't want to start it before the images are loaded!)
+</textarea></span>
+}
+<span>
+/*************************************************/
+function loadImages(callback) {
+    var numLoaded = 0;
+    var numToLoad = 3;
+
+    var loadImage = function(src){
+        var image = new Image();
+        image.onload = function() {
+            if (++numLoaded == numToLoad) {
+                callback();
+            }
+        };
+        image.src = src;
+        return image;
+    };
+
+    shipImg = loadImage('resources/ship.png');
+    laserImg = loadImage('resources/laser.png');
+    alienImg = loadImage('resources/alien.png');
+}
+<textarea class="description">**HOT TIP**
+
+This is another handy game programming practice. Obviously, the intent of this function is to load the images (or 'sprites') that we need to draw in the game, but browsers load images asynchronously, meaning they might not actually get loaded until a couple of seconds after you make the request for them.
+
+What this function does is keep track of how many images were requested (set in the variable 'numToLoad') and how many have finished loading 'numLoaded'.
+
+If this code doesn't make sense to you, spend a little time trying to understand it. There are some important concepts here.
+
+'loadImage' is function-within-a-function. Its scope is limited to the parent 'loadImages' function. It's not important that it be done this way, it's just nice to encapsulate this sub-function with its parent so that there is no confusion that it might be called by any other function (it can't). By using a child function, it also allows the counter variables (numLoaded and numToLoad) to stay in scope without the need to make them global variables. Generally we avoid defining more globals than we need.
+
+Because 'loadImage' is a function, it does not automatically run when the parent function is called until it is explicitly called, but, as you can see, the first real logic that the parent runs is three calls to the child function.
+
+The child function takes a URL to the images. It creates a generic Image object and populates its 'onload' callback. This callback is invoked when the image is actually loaded into memory. The callback keeps track of how many images have been loaded and once all have been loaded, it calls the callback (gameLoop()) that we passed into it and the game begins.
+</textarea></span>
+<span>
+/*************************************************/
+function gameLoop() {
+/*************************************************/
+<textarea class="description">This is our main animation loop. Once it starts, it will attempt to run itself 60 times a second.
+
+Every time (loop) it runs is considered a 'frame' in animation-speak. Just as with animation on movie film, every frame is a separate drawing... the difference being that we are generating these frames in real time. For every frame, we clear the canvas, update our positions, respond to key presses, and redraw everything.
+
+At the end of each animation loop, we tell the system to call us again in 1/60th of second and we do everything all over again. This is the CORE of game programming. Wash. Rinse. Repeat.</textarea></span>
+<span>
+    // CLEAR CANVAS
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT);
+<textarea class="description">First Step: CLEAR
+
+Set the canvas's current drawing color to black ('#000000'). Note: colors are define as 24-bit hexidecimal RGB (Red, Green, Blue) STRINGS. '#000000' is black, '#FFFFFF' is full-on white.
+
+We then draw a filled rectangle that is the full size of our play field. Black is used for the color. Think of this as starting with a clean sheet of paper.
+</textarea></span>
+<span>
+    // UPDATE POSITIONS
+    if (keyState[KEY.LEFT]) {
+        if (shipX >= 8) {
+            shipX -= 4;
+        }
+    }
+
+    if (keyState[KEY.RIGHT]) {
+        if (shipX <= PLAYFIELD_WIDTH - 46) {
+            shipX += 4;
+        }
+    }
+
+    if (keyState[KEY.SPACE]) {
+        if (!firing) {
+            firing = true;
+            missileX = shipX + 17;
+            missileY = shipY;
+        }
+    }
+<textarea class="description">Here's where we update all of our sprite positions, making sure they stay within the bounds of the play field dimensions.
+
+This recalls the first part of our application code where we monitor keypresses. Because of those listeners and our state array (keyState[]) it is now very simple to check the up/down state of any key.
+
+The first two blocks move the ship left or right depending on the key being presses, and the third check the SPACE BAR. If the space bar is pressed AND we're not currently firing a missile, then we will launch one now.
+Note that in this very simple 'game' we only allow one missile to be firing at a time. In our next tutorial, MUCH more interesting thing happen.
+If a missile it to be fired, we start it out relative to our ship's position.
+
+NOTE: we are only updating the variables that track the virtual position of the images... we're not actually moving or drawing them here. That comes next.
+</textarea></span>
+<span>
+    if (firing) {
+        missileY -= 16;
+        if (missileY < 0) {
+            firing = false;
+        }
+        ctx.drawImage(laserImg, missileX, missileY);
+    }
+<textarea class="description">Here's our first animation.
+This says that if we have fired a missile, we need to update it. Every animation loop we move the missile 16 pixels up (missileY). If the missile coordinates have gone off the top of the screen then we consider that missile ended and set our state flag accordingly so that a new missile can be fired on the next loop.
+
+'ctx.drawImage' is just about the most important call in all of game programming. This is where the image actually gets placed into the canvas bitmap for us to see.
+'ctx' is the canvas (remember we grabbed this reference in our initApp() function), laserImg is the image we want to draw (that we loaded in loadImages()) and missileX and missileY are simply the variables the store the X & Y coordinates within the bitmap at which we want the image to be drawn. (Canvas bitmaps use a coordinate system where 0,0 is the top left pixel in the bitmap).
+</textarea></span>
+<span>
+    alienY += 4;
+    ctx.drawImage(alienImg, alienX, alienY);
+    ctx.drawImage(shipImg, shipX, shipY);
+<textarea class="description">Now we do the same for the alien sprite. Move it 4 pixels down the screen and draw it at the new location. Also draw the spaceship at its current coordinates.</textarea></span>
+<span>
+    // CHECK COLLISIONS
+    if (missileX >= alienX && missileX < alienX + 24 && missileY > alienY && missileY < alienY + 24) {
+        score += 1;
+        firing = false;
+        alienY = -24;
+        alienX = 20 + Math.floor(Math.random() * (PLAYFIELD_WIDTH - 64));
+    }
+<textarea class="description">Okay, a game wouldn't be a game if nothing could crash into each other. But how do you know if something collided? It's important to understand that nothing is physically colliding - they're just pixels filled with colors. What determines a collision is up to the game.
+
+This is the concept of 'collision detection' and there are many different ways to do it. It's not built into the system, so your game has to figure it out by itself based on its knowledge of where, and how big, each object is.
+
+For simplicty, this game uses the simplest form of collision detection... it simply calculates 'if the rectangle that encompasses the missile overlaps the rectangle that encompasses the alien coordinates then the missile has hit an alien'.
+If you hit an alien, you get a point, we set our 'firing' state variable back to 'false' so that a new missile will be allowed to fire, and we reset the alien to a random position slightly off the top of the screen.
+</textarea></span>
+<span>
+    ctx.fillStyle = "#008000";
+    ctx.fillText('SCORE: ' + score, 10, 25);
+<textarea class="description">Here we set the canvas context to use the color green. Any shape or text drawn after this point will be drawn in green, but of course, nothing that was drawn before this point changes color.
+
+After setting our pen color, draw the current score at coordinates 10,25 in the canvas context (bitmap).
+</textarea></span>
+<span>
+    // SCHEDULE NEXT FRAME UNLESS ALIEN HAS REACHED THE BOTTOM
+    if (alienY < PLAYFIELD_HEIGHT - 25) {
+        window.requestAnimationFrame(gameLoop);
+    } else {
+        ctx.fillText('GAME OVER', 180, 225);
+    }
+<textarea class="description">This might be a bit confusing at first, but it's really critical.
+
+Now that we've completed our animation loop, we have to do it again and again until the game ends. In this super simple game, the game ends if an alien ever reaches the bottom of the screen without being hit by your missile.
+
+If the alien has NOT reached the bottom of the screen, then we need to schedule our next animation frame. You do this by passing a reference to your gameLoop function to the system API: window.requestAnimationFrame().
+Doing so returns control back to the system for a brief moment so it can do all of its internal housekeeping chores (which includes actually copying your canvas to the visible screen) and then as soon as the system determines the most efficient time for you to draw the next frame, it will call your animation loop callback. Neat. You might think you could just write a fixed loop for this... why involve the system? Well, if you just kept looping inside of this function, the system would never get a chance to do anything. You'd never see your game on the screen and your browser would become unresponsive and possibly crash.
+
+requestAnimationFrame() is actually a fairly recent addition. Before that, you had to create a timer (setTimeout or setInterval) that would call your loop on a regular basis. The problem with that method is that the timers aren't synched to the display, so the resulting animation wouldn't always be smooth. requestAnimationFrame() knows to call you immediately before refreshing the display, which results in a much smoother animation. If your browser does not support this, you desperately need a new browser.</textarea></span>
+}
+<span>
+// The End - Final words
+<textarea class="description">And that's it... a really basic game in about 100 lines of code. But this is just the beginning. Now that you know about canvases, loading images, animation loops, etc, the world is your oyster! Go out there an create amazing things!
+
+And be sure to check out our next tutorial (Alien Attack!) that GREATLY builds on these concepts and is a fun game to play as well!
+
+I thank you for your time. I hope you learned some cool stuff, and I hope you'll consider donating whatever you feel appropriate at the PayPal link above... but most of all, be creative and have some fun!
+
+    -Jeff
+</textarea></span>
+            </pre>
+        </div>
+
+        <script>
+            // Insert the app title and icon into browser tab
+            $('head').append('<title>Javascript Rockstar</title>');
+            $('head').append('<link rel="icon" type="image/png" sizes="16x16" href="./resources/js.png">');
+
+            $('#homeLink').on('click', function() {
+                //window.open();
+            });
+            $('#gameLink').on('click', function() {
+                window.open('../game/index.html');
+            });
+            $('#donateLink').on('click', function() {
+                window.open('https://www.paypal.me/WildLizardRanch/2.99');
+            });
+            $('#facebookLink').on('click', function() {
+                window.open('http://www.facebook.com/JavascriptRockstar/');
+            });
+        </script>
+
+    </body>
+</html>
