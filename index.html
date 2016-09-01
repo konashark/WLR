@@ -5,17 +5,93 @@
         <title>Wild Lizard Ranch</title>
     </head>
     <body>
-        <script>
-            window.location.href = './gallery_jrs/';
-        </script>
-<!--
-        <script src="./wildlizardranch/js/gallery.js"></script>
-
-        <div id="screen">
-            <img id="background" src="./wildlizardranch/resources/background.jpg">
-            <div id="title">Wild Lizard Ranch</div>
-            <div id="intro">UNDER CONSTRUCTION</div>
+    <div id="background">
+        <div id="backgroundContent" class="centerUi">
         </div>
-        -->
+    </div>
+
+    <div id="screen">
+            <div id="ui" class="centerUi">
+                <br>
+                <div id="header">Welcome to the Wild Lizard Ranch</div>
+                <div id="options">The Art and Science of the Ranch</div><p>
+                <div id="optionContainer"></div>
+            </div>
+        </div>
+
+    <script src="libs/jquery-2.1.3.min.js"></script>
+    <script>
+        var menus = {
+            home:
+            "<div class='banner' onClick=\"location.href='./gallery_jrs/index.html'\"><a>Photography Gallery</a></div><p>" +
+            "<div class='banner' menu='games'><a>HTML Games</a></div><p>" +
+            "<div class='banner' menu='demos'><a>HTML Demos</a></div><p>" +
+            "<div class='banner' menu='javascript'><a>JavaScript Rockstar</a></div><p>" +
+            "<div class='banner' menu='writing'><a>Writing</a></div><p>"
+            ,
+            games:
+            "<div class='banner' onClick=\"location.href='./Javascript-Rockstar/AlienInvasion/game/index.html'\"> <a>Alien Invasion!</a></div><p>" +
+            "<div class='banner' onClick=\"location.href='./Javascript-Rockstar/RocksInSpace/game/index.html'\"> <a>Rocks In Space</a></div><p>" +
+            "<div class='banner' menu='home'> <a>Top Menu</a></div><p>"
+            ,
+            demos:
+            "<div class='banner' onClick=\"location.href='./apps/chaosGame/index.html'\"> <a>Chaos Game</a></div><p>" +
+            "<div class='banner' onClick=\"location.href='./apps/Timeline/index.html'\"> <a>Timeline</a></div><p>" +
+            "<div class='banner' menu='home'> <a>Top Menu</a></div><p>"
+            ,
+            javascript:
+            "<div class='banner' onClick=\"location.href='./Javascript-Rockstar/BasicAnimation/tutorial/index.html'\"> <a>Tutorial - Basic Animation</a></div><p>" +
+//            "<div class='banner' onClick=\"location.href='./Javascript-Rockstar/AlienInvasion/tutorial/index.html'\"> <a>Tutorial - Alien Invasion!</a></div><p>" +
+//            "<div class='banner' onClick=\"location.href='./Javascript-Rockstar/RocksInSpace/tutorial/index.html'\"> <a>Tutorial - Rocks In Space</a></div><p>" +
+            "<div class='banner'><a>Soon! - Alien Invasion!</a></div><p>" +
+            "<div class='banner'><a>Soon! - Rocks In Space</a></div><p>" +
+            "<div class='banner' menu='home'> <a>Top Menu</a></div><p>"
+            ,
+            writing:
+            "<div class='banner'><a>Coming Soon: Books</a></div><p>" +
+            "<div class='banner' menu='home'> <a>Top Menu</a></div><p>"
+        };
+
+        var drawMenu = function(menu) {
+            //$('#optionContainer').empty();
+            $('#optionContainer').html(menus[menu] + '<br><br><br><div id="menuName"></div>');
+            $('#menuName').text(menu);
+            setTimeout(function() { $('#menuName').css({ 'transform': 'scale(10,10)', 'opacity': 1 })}, 1);
+
+            persistentWrite('lastMenu', menu);
+        };
+
+        $('#screen').on('click', '.banner', function(elem) {
+            var newMenu = this.getAttribute('menu');
+            if (newMenu) {
+                console.log('Clicked on ', newMenu);
+                drawMenu(newMenu);
+            }
+        });
+
+        var persistentWrite = function(name, value) {
+            if(typeof(localStorage) == "object") {
+                localStorage.setItem(name, JSON.stringify(value));
+            }
+        };
+
+        var persistentRead = function(name) {
+            if(typeof(localStorage) == "object") {
+                var value = localStorage.getItem(name);
+                if (value !== "undefined") {
+                    value = JSON.parse(value);
+                }
+                return value;
+            }
+        };
+
+        var lastMenu = persistentRead('lastMenu');
+        if (lastMenu && menus[lastMenu]) {
+            drawMenu(lastMenu);
+        } else {
+            drawMenu('home');
+        }
+
+    </script>
     </body>
 </html>

@@ -1,6 +1,38 @@
 @font-face {
-    font-family: Cisco_Bold;
-    src: url('../resources/CiscoSansTTBold.ttf');
+    font-family: Birch;
+    src: url('../resources/BirchStd.otf');
+}
+
+@font-face {
+    font-family: Thin;
+    src: url('../resources/Aktiv_Lt.ttf');
+}
+
+.centerUi {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+    height: 100%;
+    overflow:hidden;
+}
+
+#background {
+    position: fixed;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+}
+
+#backgroundContent {
+    top: 0%;
+    left: 0%;
+    width: 960px;
+    height: 100%;
+    background-image: url("../resources/background.jpg");
+    background-repeat: no-repeat;
 }
 
 #screen {
@@ -8,19 +40,15 @@
     top: 0%;
     left: 0%;
     width: 100%;
-    height: 100%;
-    background-color: #420;
-    font-family: Cisco_Bold;
-    overflow: hidden;
+    height: 200%;
 }
 
-#background {
-    position: absolute;
+#ui {
+    //position: absolute;
     top: 0%;
     left: 0%;
-    width: 100%;
-    height: 100%;
-    opacity: .66;
+    width: 900px;
+    font-family: Thin;
 }
 
 #title {
@@ -41,4 +69,70 @@
     top: 70%;
     width: 100%;
     text-align: center;
+}
+
+#header {
+    font-family: Birch;
+    font-size: 64pt;
+    color: white;
+    font-weight: bolder;
+    text-align: center;
+    opacity: 1.0;
+    text-shadow: black 5px 5px 5px;
+    font-smoothing: antialiased;
+}
+
+#options {
+    font-size: 25pt;
+    color: #fc3;
+    text-align: center;
+    font-family: Thin;
+    text-shadow: black 2px 2px 1px;
+    font-smoothing: antialiased;
+}
+
+.banner {
+    margin-left: 30%;
+    padding-top: 15px;
+    width: 40%;
+    height: 52px;
+    border: solid 1px #027;
+    border-radius: 13px;
+    transition: all 256ms;
+    text-align: center;
+    background: rgb(109,179,242); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(109,179,242,.66) 0%, rgba(84,163,238,.66) 7%, rgba(54,144,240,.66) 13%, rgba(30,105,222,.66) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(109,179,242,.66) 0%,rgba(84,163,238,.66) 7%,rgba(54,144,240,.66) 13%,rgba(30,105,222,.66) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(109,179,242,.66) 0%,rgba(84,163,238,.66) 7%,rgba(54,144,240,.66) 13%,rgba(30,105,222,.66) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    color: white;
+    overflow: hidden;
+}
+
+.banner:hover {
+    background: rgb(109,179,242); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(109,179,242,1) 0%, rgba(84,163,238,1) 7%, rgba(54,144,240,1) 13%, rgba(30,105,222,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(109,179,242,1) 0%,rgba(84,163,238,1) 7%,rgba(54,144,240,1) 13%,rgba(30,105,222,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(109,179,242,1) 0%,rgba(84,163,238,1) 7%,rgba(54,144,240,1) 13%,rgba(30,105,222,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
+
+a {
+    font-family: Thin;
+    font-size: 20pt;
+    text-decoration: none;
+    color: white;
+    text-shadow: black 1px 1px 1px;
+    font-smoothing: antialiased;
+}
+
+.banner:hover a {
+    color: #fc3 !important;
+}
+
+#menuName {
+    color: white;
+    opacity: 0;
+    text-align: center;
+    transition: ease-in-out, transform 999ms, opacity 999ms;
+    transform: scale(1,1);
+    z-index: 0;
 }
