@@ -15,6 +15,7 @@
             <button id="homeLink" class="btn">HOME PAGE</button>
             <button id="gameLink" class="btn">PLAY DEMO</button>
             <button id="donateLink" class="btn">BE AWESOME - DONATE</button>
+            <button id="gitLink" class="btn">Get from GITHUB</button>
             <button id="facebookLink" class="btn">FACEBOOK PAGE</button>
         </div>
         <div id="content">
@@ -282,13 +283,16 @@ I thank you for your time. I hope you learned some cool stuff, and I hope you'll
             $('head').append('<link rel="icon" type="image/png" sizes="16x16" href="./resources/js.png">');
 
             $('#homeLink').on('click', function() {
-                //window.open();
+                window.location = 'http://www.wildlizardranch.com';
             });
             $('#gameLink').on('click', function() {
                 window.open('../game/index.html');
             });
             $('#donateLink').on('click', function() {
-                window.open('https://www.paypal.me/WildLizardRanch/2.99');
+                window.open('https://www.paypal.me/WildLizardRanch/2.00');
+            });
+            $('#gitLink').on('click', function() {
+                window.open('https://github.com/konashark/BasicAnimation');
             });
             $('#facebookLink').on('click', function() {
                 window.open('http://www.facebook.com/JavascriptRockstar/');

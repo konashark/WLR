@@ -10,9 +10,12 @@
         <script src="js/main.js"></script>
 
         <div id="banner">
-            Javascript Rockstar Tutorial #2: Alien Invasion!
+            Javascript Rockstar Tutorial #2: Alien Invasion!<br>
+            <button id="homeLink" class="btn">HOME PAGE</button>
             <button id="gameLink" class="btn">PLAY ALIEN INVASION!</button>
             <button id="donateLink" class="btn">BE AWESOME - DONATE</button>
+            <button id="gitLink" class="btn">Get from GITHUB</button>
+            <button id="facebookLink" class="btn">FACEBOOK PAGE</button>
         </div>
         <div id="content">
             <pre id="code">
@@ -85,13 +88,15 @@ var PAUSED = 2;
 var END_GAME = 3;
 var QUIT = 4;
 var gameState = START_GAME;
-<textarea class="description">These track what state the game is in. We give hard-coded numbers a name so they are easier to read in the code later on. I like to use ALL_CAPS for this. ALL_CAPS has no special meaning to Javascript, but it tells me that this is a hard-coded value that will not change (ie: immutable) during the game. 'gameState' tracks which state the game is in, starting with START_GAME.</textarea></span>
+<textarea class="description">These track what state the game is in. We give hard-coded numbers a name so they are easier to read in the code later on. I like to use ALL_CAPS for this. ALL_CAPS has no special meaning to Javascript, but it tells me that this is a hard-coded value that will not change (ie: immutable) during the game. The latest versions of Javascript (ES6) have specific keywords ('const' and 'let') for doing things like this, but that's not what this tutorial is about, so we'll stick to mostly plain-vanilla Javascript here.
+
+'gameState' tracks which state the game is in, starting with START_GAME. This, too, is merely a concept of this app and has no special meaning to Javascript.</textarea></span>
 <span>
 var score = 0;
 var distance = 0;
 var shieldPower = 100;
 var mousePosX;
-<textarea class="description"></textarea></span>
+<textarea class="description">Your basic variables where we keep track of changing values in the application. These should be pretty self-explanatory.</textarea></span>
 <span>
 var ctx;    // Main canvas context
 var shipImg, shieldImg, laserImg, explosionImg, earthriseImg, nebulaImg;
@@ -102,7 +107,7 @@ var shieldSprite;
 var explosionSprite;
 var explosionSound;
 var clickSound;
-<textarea class="description"></textarea></span>
+<textarea class="description">More variables to keep track of things. Most of these refer to 'assets' or 'resources' which is just a fancy name for things like images and sounds. When images and sounds get loaded (later on) we store them in these variables so that they can be used throughout the lifecycle of the app.</textarea></span>
 <span>
 var stars = [];
 var swarms = [];
@@ -110,27 +115,32 @@ var swarmSpeedBase = 2.5;
 var asteroidStuff = [];
 var asteroidSpeedBase = 1;
 var laserStuff = [];
+
 var firing = isTouchDevice;
 var firingThrottle = 1;
 var framesTilEndOfGame = 0;
-<textarea class="description"></textarea></span>
+<textarea class="description">And finally this set of variables keeps track of arrays (lists) of the various objects in our game, and some micro-states within the application. The arrays ([]) keep track of lists of similar items. These will be populated later.
+
+The 'firing' state is unusual - we use this variable to keep track of whether or not the user is currently firing his lasers, but if we have previously determined that we are running on a touch based device (see the HOT TIP farther up) we just set the initial state to TRUE and leave it there - so on touch-based devices, the lasers are ALWAYS firing and on computers, we start in FALSE state until the user clicks the mouse button later on.</textarea></span>
 <span>
 /*************************************************/
 function initApp () {
     console.log("Initializing...");
-<textarea class="description"></textarea></span>
+<textarea class="description">This is the function that kicks everything off. You may remember that one of the first lines in the code installed an event listener that fires when the page is loaded. When loaded, this is the function that it calls.</textarea></span>
 <span>
     // Initialize the JGL sprite utility
     jgl = new Jgl;
     spriteList = jgl.newSpriteList();
-<textarea class="description"></textarea></span>
+<textarea class="description">To avoid bogging us down with too much 'infrastructure' this app includes the JGL sprite engine for drawing/animating the images (sprites). This is a very small library of vanilla Javascript that just saves us a lot of extra work here. I wrote this library as well and include it with all of these tutorial games. At it's core, all it does is draw images to the screen using Canvas. a JGL tutorial will be included in the future.</textarea></span>
 <span>
     var canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
-<textarea class="description"></textarea></span>
+<textarea class="description">I can't teach you anything but the basics of Canvas in this little tutorial, but this is the key. If you want to write games, read up on Canvas. Canvas gives you a 2-dimensional 'bitmap' of pixels that you can draw into, giving you absolute control of what gets drawn to the screen. For games Canvas is your new best friend. Love it.
+
+If you look in the HTML of this application, you will see it creates a DOM element with the id of "canvas" (any name you want). This code looks up this canvas element and grabs a 2D 'context' to it - this context is your reference to the screen. All Canvas APIs will specify a Canvas to draw into - this is it.</textarea></span>
 <span>
     document.addEventListener("keydown", processKeyDown);
-<textarea class="description"></textarea></span>
+<textarea class="description">Here we simply specify a function that should be called every time the user presses a key. Our function is called 'processKeyDown'.</textarea></span>
 <span>
     createStars();
 
@@ -142,7 +152,7 @@ function initApp () {
     loadImages(function() {
         gameLoop(); // Kick off the main animation loop once the images are loaded
     });
-<textarea class="description"></textarea></span>
+<textarea class="description">The above lines do the game 'set-up' - it calls functions in the app to randomly position all of the stars, create the swarms of aliens, and load all of the external images that we need. Once all the images are loaded, we jump into the function 'gameLoop' which will talk about in a minute.</textarea></span>
 <span>
     // Declare event listeners for mouse click, release, and move
     var element = document.getElementById('canvas');
@@ -151,8 +161,8 @@ function initApp () {
     element.onmousedown = mouseDown;
     element.onmouseup = mouseUp;
 }
-<textarea class="description"></textarea></span>
-
+<textarea class="description">This is another way to install event handlers. This is saying that anytime the user does something with the mouse inside the canvas element, that the system should call these functions that are defined in our app a little farther down.</textarea></span>
+<span>
 /*************************************************/
 function mouseDown() {
     if (gameState == START_GAME) {
@@ -169,7 +179,8 @@ function mouseDown() {
         firingThrottle = 1;
     }
 }
-
+<textarea class="description">This function is called whenever the user clicks the mouse. How it responds depends on the STATE of the game. If we have just started the game, a click kicks off a new game. If we are at the end of the game, a click transitions us to a new start screen and a new game. If we are not in either of these states, a mouse click is used to fire the lasers.</textarea></span>
+<span>
 /*************************************************/
 function mouseUp() {
     // On PC, stop firing. On touch-based devices, do not stop firing while the game is in play
@@ -178,12 +189,14 @@ function mouseUp() {
         firingThrottle = 1;
     }
 }
-
+<textarea class="description">If the user releases the mouse button (on a non-touchpad device) we stop firing lasers. We track this by storing 'false' in the 'firing' variable. It is used later on.</textarea></span>
+<span>
 /*************************************************/
 function mouseMove(e) {
     mousePosX = e.offsetX == undefined ? e.layerX : e.offsetX;  // FireFox uses 'layer', Chrome & Safari use 'offset'
 }
-
+<textarea class="description">Here we store the horizontal position of the mouse cursor whenever the user moves it. This value will be used for positioning our ship in the main game loop.</textarea></span>
+<span>
 /*************************************************/
 function processKeyDown(ev) {
     switch (ev.keyCode)
@@ -207,7 +220,8 @@ function processKeyDown(ev) {
             console.log("Pressed key: " + ev.keyCode);
     }
 }
-
+<textarea class="description">This function is called whenever the user presses a key on the keyboard. The 'Q' and 'P' keys are responded to by quitting or toggle pausing the game. You will see how 'gameState' is used in the main game loop later on.</textarea></span>
+<span>
 /*************************************************/
 function resetGame() {
     var i;
@@ -226,9 +240,11 @@ function resetGame() {
         resetAsteroid(asteroidStuff[i]);
     }
 }
+<textarea class="description">This function is called when we want to reset all game instance variable back to their original state, such as when the game ends and the user clicks to start a new game.</textarea></span>
 
 /*************************************************/
 function createSwarm (index) {
+<span>
     var swarm = {
         active: false,
         pathIndex: 0,
@@ -236,6 +252,12 @@ function createSwarm (index) {
         numAlive: NUM_ALIENS,
         sprites: []
     };
+<textarea class="description">'path' is an array of objects. Every object contains an x,y and rotation information for every step of the swarm's animation.
+
+'pathIndex' keeps track of which element (frame) of the array is currently being used for animating the swarm.
+
+'numAlive' keeps tracks of how many aliens in the swarm are still flying. As they get shot by lasers, this number decreases. If it reaches 0, a new swarm will be generated.</textarea></span>
+<span>
 
     swarm.image = jgl.newImage('resources/alien'+index+'.png', function() {
         for (var i = 0; i < NUM_ALIENS; i++) {
@@ -249,13 +271,19 @@ function createSwarm (index) {
 
     return swarm;
 }
+<textarea class="description">As the name suggests, this function creates a swarm of attacking space bugs. Each is represented by the 'swarm' object that tracks the state of the swarm. The function also loads the swarm sprite image and assigns it to each bug in the swarm.
 
+You may have noticed that every time this function is called to create a swarm, another function 'createPath' is called. When a new swarm is created, the entire path that the swarm follows is pre-defined before it even starts.</textarea></span>
+
+<span>
 /*************************************************/
 function resetSwarm (index) {
     swarms[index].pathIndex = 0;
+<span>
     if (gameState == IN_PLAY && swarmSpeedBase < 7.25) {
         swarmSpeedBase += .25;
     }
+<textarea class="description">While the game is playing, every new swarm gets a little bit faster.</textarea></span>
     swarms[index].path = createPath(swarmSpeedBase + index);
     swarms[index].numAlive = NUM_ALIENS;
     for (var i = 0; i < NUM_ALIENS; i++) {
@@ -264,7 +292,9 @@ function resetSwarm (index) {
         swarms[index].sprites[i].y = -50;
     }
 }
+<textarea class="description">When an alien swarm is exterminated or finishes its pre-defined path, the app calls this function to reset the swarm for another pass, creating another random path for it to follow.</textarea></span>
 
+<span>
 /*************************************************/
 function createStars() {
     for (var i = 0; i < NUM_STARS; i++) {
@@ -275,18 +305,24 @@ function createStars() {
         });
     }
 }
+<textarea class="description">This function defines all the stars that scroll down the screen. Each star is stored in an array (the global 'stars') and contains a random x,y coordinate and brightness.
+
+As you probably know, colors are defined as 3 red, green, and blue values between 0 and 255. Here we pick a random number between 64 and 164 and set all 3 color components to the same value (which will be a level of gray). We have to turn this color into a string like "rgb(89,89,89)" for use with Canvas.</textarea></span>
 
 /*************************************************/
 function loadImages(callback) {
+<span>
     var numToLoad = 5;
     var loadComplete = function() {
         if (--numToLoad == 0) {
             callback();
         }
     };
+<textarea class="description">As each set of images is loaded, this sub-function is called. When all sets of have been loaded (tracked by the 'numToLoad' variable which in this game is 5) the callback function that was passed in gets called. If you look at the actual callback function you will see that it starts the game.</textarea></span>
 
     var frame, i;
 
+<span>
     shipImg = jgl.newImage('resources/ship.png', function() {
         shipSprite = spriteList.newSprite({
             image: shipImg,
@@ -295,6 +331,7 @@ function loadImages(callback) {
         });
         loadComplete();
     });
+<textarea class="description">We use the JGL library utility function to load the image, create a sprite from it, and set its attributes.</textarea></span>
 
     shieldImg = jgl.newImage('resources/shield.png', function() {
         shieldSprite = spriteList.newSprite({
@@ -331,6 +368,7 @@ function loadImages(callback) {
         }
         clickSound = new Audio('resources/laser.mp3');
 
+<span>
         // Example of loading and defining an animated sprite
         explosionImg = jgl.newImage("resources/explosion.png", function() {
             for (i = 0; i < NUM_LASERS; i++) {
@@ -370,6 +408,18 @@ function loadImages(callback) {
                 explosionSprite.setAnimFrame(frame, explosionImg, frame * 88, 0, 88, 90);
             }
             explosionSound = new Audio('resources/crash.mp3');
+<textarea class="description">Our explosion sprite is an animated sprite. Here we load an image that contains a grid where each cell represents one frame of the explosion animation.
+
+Using sprite.setAnimFrame we define where in the master image each sprite can find it's individual animation frames (each is 88 pixels wide and 90 tall).
+
+Note that we actually create multiple explosion animation sprites, the number of which corresponds to the maximum number of lasers we allow - that way there can be one explosion animation sprite available for any laser that collides with an alien.
+
+This probably is a bit tricky to absorb on first glance, but stick with it. Animated sprites can be very handy. See the JGL documentation for more information.
+
+After creating one explosion for every laser, we then create one more that we use for when the ship gets destroyed. There's really nothing different about this one other than you can see its 'scale' is set to 4, so it's drawn 4 times bigger.
+
+Finally, we pre-allocate an explosion SOUND object for every explosion sprite, ensuring that there's one available for every potential hit.
+</textarea></span>
 
             loadComplete();
         });
@@ -381,7 +431,9 @@ function loadImages(callback) {
         });
     });
 }
+<textarea class="description">This function pre-loads all of the images the game uses. Because images can be loaded asynchronously, we want to make sure they have completely loaded before the game continues.</textarea></span>
 
+<span>
 /*************************************************/
 function fireLaser() {
     if (shipSprite.active) {
@@ -398,7 +450,14 @@ function fireLaser() {
         }
     }
 }
+<textarea class="description">When the mouse button is clicked to fire a laser, this function is called. IF the ship is currently active (not in the process of exploding or the game is not running) then one of our pre-allocated laser sprites is activated and places relative to our ship and a laser sound is played.
 
+'firingThrottle' is an interesting device. What it does is prevent firing the lasers too rapidly. This function could be called with every loop of the game, and as the game usually runs at 60 frames per second, we don't want our laser to fire that rapidly.
+
+The net result is that this allows a laser to be fired once every 'FIRING_SPEED' loops. This is one of the interesting challenges of writing animated games... you have to control how frequently things happen - not everything happens 60 times a second.
+</textarea></span>
+
+<span>
 /*************************************************/
 function doExplosion(laserIndex, alien) {
     laserStuff[laserIndex].explosionSound.play();
@@ -411,7 +470,11 @@ function doExplosion(laserIndex, alien) {
 
     score += 10;
 }
+<textarea class="description">If the games detects a laser has hit an alien, this function is called to activate one of pre-defined explosion sprites at the appropriate location and play an explosion sound.
 
+Note we pass in the laserIndex which simply defines which of pre-allocated laser sprites to use, and an alien. We pass in the alien that was hit so we can read its x and y coordinates and position the explostion at the same place.</textarea></span>
+
+<span>
 /*************************************************/
 function shipExplodes() {
     explosionSprite.setAnimActions(true);
@@ -422,7 +485,9 @@ function shipExplodes() {
     explosionSound.play();
     shipSprite.hide();
 }
+<textarea class="description">Called when an alien or asteroid collides with our ship. When that happens, we show our 4X explosion sprite, start it animating, and play an explosion sound. We also turn off our ship sprite since it's now space dust.</textarea></span>
 
+<span>
 /*************************************************/
 function createPath(speed) {
     var setVector = function() {
@@ -462,7 +527,20 @@ function createPath(speed) {
 
     return path;
 }
+<textarea class="description">This is the function we talked about earlier. When each swarm is created, we pre-define its entire path. This is probably the most complicated functions to understand, so you may just have to trust me on this one. It's not like you would need it for any other game except one similar to this. This clever routine suddenly came to me about 6 months before I wrote this game and bugged me for a long time until I finally got around to seeing if it worked. This game is a result of that experiment.
 
+If you recall, every swarm has a path (an array of position objects). Our paths always work their way from the top of the screen to the bottom, but along the way they can randomly fly in loops. If the random generator decides it's time to do a loop, we randomly pick an angle (135-225 degrees) to be our target angle and a direction (+1 or -1). Every frame of the animation uses the direction to move us one degree closer to our target angle (which always ends in the downward half of the arc so that we keep making progress towards the bottom of the screen). We also set the rotation of the sprite to make it look like its closely following the curve of the path.
+
+Of course, we have to use a little fancy math (cos/sin) to define the curves, and we need to convert degrees to radians to set our rotations. This is not easily describable in text.
+
+There's not usually a lot of math in basic games, but you will find a LOT of games need to figure out how to plot curves, whether it be the trajectory of a missile, or a car sprite turning a corner. cos/sin and converting between degrees and radians can do all of this for you, so if you want to study one mathematical game pattern, this is what you should look at.
+
+Once the path has gone beyond the bottom of the stream, we quit calculating frame positions and return the path array.
+
+If you can understand this function, you should have no problem with any other game development pattern or logic. If you do not, don't worry about it too much - start with game development that doesn't require curves and work up to it.
+</textarea></span>
+
+<span>
 /*************************************************/
 function gameLoop() {
 /*************************************************/
@@ -497,7 +575,20 @@ function gameLoop() {
 
     window.requestAnimationFrame(gameLoop);
 }
+<textarea class="description">Ahh! We've finally arrived! Now that we've set up all the assets, state management, and support functions, we get to core of the application.
 
+Every animated game follows this pattern - every loop you redraw the playfield - first you clear the area, next you calculate where each moving object has moved in the last 1/60th of a second, and then you redraw all the objects. Some games could be optimized so that only those areas that have moved get cleared and redrawn, but for this game, we just redraw everything, every frame.
+
+This function runs every single frame of your animated game. You'll note that the last line calls the very important 'requestAnimationFrame' function. This tells the system 'I'm releasing control back to you, but call me again in 1/60th of second when it's time to draw the next frame.'
+
+It's very important in Javascript, as in most languages (but not true of the old school BASIC languages I learned on) that you return control to the system to do housekeeping chores every loop. Javascript is single-threaded, so as long as your code is running, the main system thread is waiting for you to relinquish control. If you do not, the browser or operating system will not be able to function properly and may even detect the situation and kick your app out.
+
+As you can see, if the game is running (not paused or over) the first half of this function calls our functions that update all the sprites on the screen. The second half handles special cases where the game is waiting to start or has ended - in which case we draw an overlay over the playfield with the appropriate messages.
+
+The 'framesTilEndOfGame' is one of those annoying little things we have to do to make our game look professional. What it does is, if set to a non-zero value, it counts down by 1 every frame, and when it hits 0, it puts us in 'game end' state which then causes the end-of-game overlay to be displayed. Why? Because if the game just ended the instant your ship was hit, it would look kind of dumb. This delay allows the animation to continue for another second or two, and also allows the ship explosion sprite to complete its animation before we put up the 'game over' overlay.
+</textarea></span>
+
+<span>
 /*************************************************/
 function clearScreen() {
     // Every 1000 frames, change the background
@@ -519,7 +610,15 @@ function clearScreen() {
             break;
     }
 }
+<textarea class="description">
+As we noted, every frame of the game redraws the entire playfield. The first thing the game loop does is call this function to clear the previous frame from the screen.
 
+It then draws the background either as scrolling stars or as a static image. The app rotates through these three backgrounds every 1000 loops (at 60 frames per second, that would be every 16.66 seconds.
+
+Note that the stars and the two images were all defined earlier in the initialization part of the game.
+</textarea></span>
+
+<span>
 /*************************************************/
 function updateStars() {
     var i;
@@ -532,7 +631,13 @@ function updateStars() {
         }
     }
 }
+<textarea class="description">
+This is the function called from the previous function that redraws the background. All this does is walk through the array of 'stars' (which contains the x & y coordinates and brightness) and draws them to the current frame context.
 
+If the star scrolls off the bottom of the playfield, it is repositioned at the top of the screen at new, random, positions.
+</textarea></span>
+
+<span>
 /*************************************************/
 function updateShip() {
     if (shipSprite.active) {
@@ -545,7 +650,16 @@ function updateShip() {
         distance++;
     }
 }
+<textarea class="description">
+This function is also called every frame. If the ship is currently active (game in play) this updates the ship sprite so that it's at the horizontal position corresponding to the mouse.
+Note: this only updates the position in the ship's data object. It will actually get drawn at the new position when the game loop calls spriteList.drawSprites() (see game loop above).
 
+We also call a function that calculates whether or not the new ship position overlaps one of the aliens. If so, the shield sprite is automatically activated to protect the ship until it is depleted.
+
+Lastly, we increment our global 'distance' counter that keeps track of how long the user has been playing the game (how many frames).
+</textarea></span>
+
+<span>
 /*************************************************/
 function updateSwarms() {
     var swarmIndex, alienIndex;
@@ -568,7 +682,16 @@ function updateSwarms() {
         }
     }
 }
+<textarea class="description">
+This function is called every frame. Here we update the positions of all the flying aliens. If you recall, every swarm's path is pre-calculated and stored in an array of position objects.
+Here, we have a double nested loop where we walk through the number or swarms in the outer loop, and the number of aliens within each swarm in the inner loop.
+If the alien is still active (hasn't been shot) we set its sprite position to a corresponding element within the long array of position objects.
+Each alien is spaced 10 positions (indeces into the array) apart so that they do not overlap each other.
 
+This part is probably not as complicated as it seems, so give it some serious study. Just remember that all of the positions for the entire path are already stored in the array, and with every frame of the game, we draw the aliens at the next position defined within that stored array.
+</textarea></span>
+
+<span>
 /*************************************************/
 function didCollideWithAlien(sprite) {
     var swarmIndex, alienIndex;
@@ -585,7 +708,21 @@ function didCollideWithAlien(sprite) {
     }
     return null;
 }
+<textarea class="description">
+Every frame, we check to see if the passed in sprite (could be the spaceship sprite, or a laser sprite) overlaps one of the aliens. If a collision has occurred, the alien that it collided with is returned.
 
+As with the previous function, we use a double nested loop, to walk through the arrays of swarms, and through the array aliens inside of each swarm.
+
+If you are new to game programming, collision detection is something you may not have thought much about, but it is one of the most critical, and oftentimes challenging aspects of game programming.
+
+Collision detection is not something built into the API. Canvas has no concept of whether or not the things you draw to it collide - that logic is completely up to you.
+
+There are many algorithms for doing collision detection. In this case, the JGL sprite library does it for you. The simplest form of collision detection is to simply calculate whether or not the coordinates of the rectangles that enclose two objects overlap, but if you objects are not very rectangular, this can lead to false positives. Other options include a circular calculation (using the pythagorean calculation to determine the distance from the center of one sprite to the other). A degree of 'fuzziness' can also be applied so that the outer edges of the rectangles/circles do not trigger a 'hit'.
+
+Multiple chapters of a book would be required to cover all of this, but this is just a quick introduction.
+</textarea></span>
+
+<span>
 /*************************************************/
 function updateLasers() {
     var laserIndex;
@@ -619,7 +756,21 @@ function updateLasers() {
         }
     }
 }
+<textarea class="description">
+Every frame we have to update the position of the laser as well.
+This code walks through our array that keeps tracks of laser positions and, if the laser is active, makes it move up 12 pixels.
 
+If the laser has gone off the top of the screen, it is hidden and put into inactive state, making it available for shooting again.
+
+You'll note that we do another collision detection. Every laser sprite has to be checked against every alien sprite to see if they collided.
+If a collision has occurred, we call the 'doExplosion()' function, passing in a reference to the laser and the alien that collided.
+
+At the end of the function, we check to see if the user is still firing (holding down the mouse button) and if so, call our function that attempts to launch another laser sprite.
+
+Lastly, our score increases by one point every time this function is called (one point per frame).
+</textarea></span>
+
+<span>
 /*************************************************/
 function resetAsteroid(asteroid) {
     asteroid.y = -50 - Math.random() * 200;
@@ -632,7 +783,10 @@ function resetAsteroid(asteroid) {
     asteroid.rotSpeed = Math.random() * 3;
     asteroid.sprite.show();
 }
+<textarea class="description">
+If an asteroid has fallen off the bottom of the playfield, this function resets the sprite to a new random position at the top of the screen. It's given a random speed (that gradually increases as the game progresses) as well as given a random rotational speed.</textarea></span>
 
+<span>
 /*************************************************/
 function updateAsteroids() {
     var asteroidIndex;
@@ -656,14 +810,23 @@ function updateAsteroids() {
         }
     }
 }
+<textarea class="description">
+Every loop we update the positions of the falling (active) asteroids. Each asteroid's position, speed, and rotational info is kept in our asteroid object.
+If the asteroid reaches the bottom of the screen, we call our reset function to reposition it at the top.
 
+Lastly, we check to see if an asteroid has collided with our ship. If it has, we automatically raise the shield if they have not been depleted.</textarea></span>
+
+<span>
 /*************************************************/
 function updateStatus() {
     ctx.fillStyle = "#080";
     ctx.fillText('SCORE: ' + score, 20, 30);
     ctx.fillText('DIST: ' + distance, PLAYFIELD_WIDTH - 170, 30);
 }
+<textarea class="description">
+Every loop we update our score and distance travelled (frames). We set a pen color (fillStyle) and then draw the score and distance at the specified coordinates.</textarea></span>
 
+<span>
 /*************************************************/
 function raiseShields() {
     shieldPower -= Math.floor(2 + Math.random() * 2.5);
@@ -679,7 +842,14 @@ function raiseShields() {
     ctx.fillStyle = "#080";
     ctx.fillText(shieldPower + '%', shieldSprite.x + 40, shieldSprite.y - 10);
 }
+<textarea class="description">
+This function is called when something collides with our ship. A random amount of power is drained for every frame that you remain in a collision state.
 
+If power is still available, the shield sprite is drawn on top of the ship sprite and the remaining power is displayed next to the shield.
+
+If the power level reaches zero, you are dead. We call the shipExplodes() function and set our count-down timer (framesTilEndOfGame) to formally end the game in 100 frames.</textarea></span>
+
+<span>
 /*************************************************/
 function startGameOverlay() {
     ctx.fillStyle = "#FC0";
@@ -689,7 +859,10 @@ function startGameOverlay() {
     ctx.font = "20px ocr";
     ctx.fillText('CLICK TO START', PLAYFIELD_WIDTH / 2 - 105, PLAYFIELD_HEIGHT / 3 + 40);
 }
+<textarea class="description">If the master gameState is set to START_GAME then the main game loop calls this function every frame.
+This simply draws the game title and 'Click to Start' instructions on top of the background animation.</textarea></span>
 
+<span>
 /*************************************************/
 function endGameOverlay() {
     ctx.fillStyle = "#FC0";
@@ -699,6 +872,8 @@ function endGameOverlay() {
     ctx.font = "20px ocr";
     ctx.fillText('CLICK TO RESTART', PLAYFIELD_WIDTH / 2 - 114, PLAYFIELD_HEIGHT / 3 + 40);
 }
+<textarea class="description">If the master gameState is set to END_GAME then the main game loop calls this function every frame.
+This simply draws the GAME OVER and 'Click to Start' instructions on top of the background animation.</textarea></span>
             </pre>
         </div>
 
@@ -707,12 +882,22 @@ function endGameOverlay() {
             $('head').append('<title>Javascript Rockstar</title>');
             $('head').append('<link rel="icon" type="image/png" sizes="16x16" href="./resources/js.png">');
 
+            $('#homeLink').on('click', function() {
+                window.location = 'http://www.wildlizardranch.com';
+            });
             $('#gameLink').on('click', function() {
                 window.open('../game/index.html');
             });
             $('#donateLink').on('click', function() {
-                window.open('https://www.paypal.me/WildLizardRanch/5.00');
+                window.open('https://www.paypal.me/WildLizardRanch/4.00');
             });
+            $('#gitLink').on('click', function() {
+                window.open('https://github.com/konashark/AlienInvasion');
+            });
+            $('#facebookLink').on('click', function() {
+                window.open('http://www.facebook.com/JavascriptRockstar/');
+            });
+
         </script>
 
     </body>
